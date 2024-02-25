@@ -1,47 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-import Card from '../Utils/Card';
-import Button from '../Utils/Button';
-import ErrorModal from '../Utils/ErrorModal';
-import classes from './AddUser.module.css';
+import Card from '../Utils/Card'
+import Button from '../Utils/Button'
+import ErrorModal from '../Utils/ErrorModal'
+import classes from './AddUser.module.css'
 
-const AddUser = (props) => {
-  const [enteredUsername, setEnteredUsername] = useState('');
-  const [enteredAge, setEnteredAge] = useState('');
-  const [error, setError] = useState();
+const AddUser = ({ onAddUser }) => {
+  const [enteredUsername, setEnteredUsername] = useState('')
+  const [enteredAge, setEnteredAge] = useState('')
+  const [error, setError] = useState()
 
   const addUserHandler = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
       setError({
         title: 'Invalid input',
         message: 'Please enter a valid name and age (non-empty values).',
-      });
-      return;
+      })
+      return
     }
-    if (+enteredAge < 1) {
+    if (Number(enteredAge) < 1) {
       setError({
         title: 'Invalid age',
         message: 'Please enter a valid age (> 0).',
-      });
-      return;
+      })
+      return
     }
-    props.onAddUser(enteredUsername, enteredAge);
-    setEnteredUsername('');
-    setEnteredAge('');
-  };
+    onAddUser(enteredUsername, enteredAge)
+    setEnteredUsername('')
+    setEnteredAge('')
+  }
 
   const usernameChangeHandler = (event) => {
-    setEnteredUsername(event.target.value);
-  };
+    setEnteredUsername(event.target.value)
+  }
 
   const ageChangeHandler = (event) => {
-    setEnteredAge(event.target.value);
-  };
+    setEnteredAge(event.target.value)
+  }
 
   const errorHandler = () => {
-    setError(null);
-  };
+    setError(null)
+  }
 
   return (
     <div>
@@ -72,7 +72,7 @@ const AddUser = (props) => {
         </form>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default AddUser;
+export default AddUser
