@@ -2,6 +2,7 @@ import React, { useReducer, useContext } from 'react'
 import Card from '../Utils/Card/Card'
 import classes from './Login.module.css'
 import Button from '../Utils/Button/Button'
+import Input from '../Utils/Input/Input'
 import { AuthContext } from '../../context/AuthContext'
 
 const initialState = { value: '', isValid: true }
@@ -44,40 +45,36 @@ const Login = () => {
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
-        <div
-          className={`${classes.control} ${
-            emailIsValid ? '' : classes.invalid
-          }`}
-        >
-          <label htmlFor="email">E-Mail</label>
-          <input
-            type="email"
-            id="email"
-            value={emailValue}
-            onChange={(event) =>
-              dispatchEmail({ type: 'USER_INPUT', val: event.target.value })
-            }
-            onBlur={() => dispatchEmail({ type: 'USER_INPUT_BLUR' })}
-          />
-        </div>
-        <div
-          className={`${classes.control} ${
-            passwordIsValid ? '' : classes.invalid
-          }`}
-        >
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            onChange={(event) =>
-              dispatchPassword({
-                type: 'USER_INPUT',
-                val: event.target.value,
-              })
-            }
-            onBlur={() => dispatchPassword({ type: 'USER_INPUT_BLUR' })}
-          />
-        </div>
+        <Input
+          isValid={emailIsValid}
+          name="email"
+          type="email"
+          label="E-mail"
+          value={emailValue}
+          onChange={(event) =>
+            dispatchEmail({ type: 'USER_INPUT', val: event.target.value })
+          }
+          onBlur={() => dispatchEmail({ type: 'USER_INPUT_BLUR' })}
+        />
+        <Input
+          isValid={passwordIsValid}
+          name="password"
+          type="password"
+          label="Password"
+          value={passwordValue}
+          onChange={(event) =>
+            dispatchPassword({
+              type: 'USER_INPUT',
+              val: event.target.value,
+            })
+          }
+          onBlur={(event) =>
+            dispatchPassword({
+              type: 'USER_INPUT',
+              val: event.target.value,
+            })
+          }
+        />
         <div className={classes.actions}>
           <Button
             type="submit"
