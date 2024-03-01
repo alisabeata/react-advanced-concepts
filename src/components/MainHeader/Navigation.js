@@ -1,29 +1,27 @@
-import React from 'react';
+import React, { useContext } from 'react'
+import { AuthContext } from '../../context/AuthContext'
+import classes from './Navigation.module.css'
 
-import classes from './Navigation.module.css';
+const Navigation = () => {
+  const ctx = useContext(AuthContext)
 
-const Navigation = (props) => {
   return (
     <nav className={classes.nav}>
-      <ul>
-        {props.isLoggedIn && (
+      {ctx.isLoggedIn && (
+        <ul>
           <li>
             <a href="/">Users</a>
           </li>
-        )}
-        {props.isLoggedIn && (
           <li>
             <a href="/">Admin</a>
           </li>
-        )}
-        {props.isLoggedIn && (
           <li>
-            <button onClick={props.onLogout}>Logout</button>
+            <button onClick={ctx.onLogout}>Log out</button>
           </li>
-        )}
-      </ul>
+        </ul>
+      )}
     </nav>
-  );
-};
+  )
+}
 
-export default Navigation;
+export default Navigation

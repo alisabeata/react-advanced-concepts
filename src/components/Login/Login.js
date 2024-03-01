@@ -1,7 +1,8 @@
-import React, { useReducer } from 'react'
+import React, { useReducer, useContext } from 'react'
 import Card from '../Utils/Card/Card'
 import classes from './Login.module.css'
 import Button from '../Utils/Button/Button'
+import { AuthContext } from '../../context/AuthContext'
 
 const initialState = { value: '', isValid: true }
 
@@ -16,25 +17,28 @@ const reducerEmail = (state, action) => {
 }
 
 const reducerPassword = (state, action) => {
-  if (action.type === 'PASSWORD_INPUT') {
+  if (action.type === 'USER_INPUT') {
     return { value: action.val, isValid: action.val.trim().length > 3 }
   }
-  if (action.type === 'PASSWORD_INPUT_BLUR') {
+  if (action.type === 'USER_INPUT_BLUR') {
     return { value: state.value, isValid: state.value.trim().length > 3 }
   }
   return initialState
 }
 
-const Login = ({ onLogin }) => {
+const Login = () => {
+  const ctx = useContext(AuthContext)
   const [emailState, dispatchEmail] = useReducer(reducerEmail, initialState)
   const [passwordState, dispatchPassword] = useReducer(
     reducerPassword,
     initialState,
   )
+  const { value: emailValue, isValid: emailIsValid } = emailState
+  const { value: passwordValue, isValid: passwordIsValid } = passwordState
 
   const submitHandler = (event) => {
     event.preventDefault()
-    onLogin(emailState.value, passwordState.value)
+    ctx.onLogin(emailValue, passwordValue)
   }
 
   return (
@@ -42,14 +46,14 @@ const Login = ({ onLogin }) => {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            emailState.isValid ? '' : classes.invalid
+            emailIsValid ? '' : classes.invalid
           }`}
         >
           <label htmlFor="email">E-Mail</label>
           <input
             type="email"
             id="email"
-            value={emailState.value}
+            value={emailValue}
             onChange={(event) =>
               dispatchEmail({ type: 'USER_INPUT', val: event.target.value })
             }
@@ -58,7 +62,7 @@ const Login = ({ onLogin }) => {
         </div>
         <div
           className={`${classes.control} ${
-            passwordState.isValid ? '' : classes.invalid
+            passwordIsValid ? '' : classes.invalid
           }`}
         >
           <label htmlFor="password">Password</label>
@@ -67,11 +71,11 @@ const Login = ({ onLogin }) => {
             id="password"
             onChange={(event) =>
               dispatchPassword({
-                type: 'PASSWORD_INPUT',
+                type: 'USER_INPUT',
                 val: event.target.value,
               })
             }
-            onBlur={() => dispatchPassword({ type: 'PASSWORD_INPUT_BLUR' })}
+            onBlur={() => dispatchPassword({ type: 'USER_INPUT_BLUR' })}
           />
         </div>
         <div className={classes.actions}>
@@ -79,10 +83,10 @@ const Login = ({ onLogin }) => {
             type="submit"
             className={classes.btn}
             disabled={
-              !emailState.isValid ||
-              emailState.value === '' ||
-              !passwordState.isValid ||
-              passwordState.value === ''
+              !emailIsValid ||
+              emailValue === '' ||
+              !passwordIsValid ||
+              passwordValue === ''
             }
           >
             Login
