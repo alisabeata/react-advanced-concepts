@@ -1,4 +1,10 @@
-import React, { useReducer, useContext } from 'react'
+import React, {
+  useReducer,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react'
 import Card from '../Utils/Card/Card'
 import classes from './Login.module.css'
 import Button from '../Utils/Button/Button'
@@ -9,10 +15,16 @@ const initialState = { value: '', isValid: true }
 
 const reducerEmail = (state, action) => {
   if (action.type === 'USER_INPUT') {
-    return { value: action.val, isValid: action.val.includes('@') }
+    return {
+      value: action.val,
+      isValid: action.val.includes('@'),
+    }
   }
   if (action.type === 'USER_INPUT_BLUR') {
-    return { value: state.value, isValid: state.value.includes('@') }
+    return {
+      value: state.value,
+      isValid: state.value.includes('@'),
+    }
   }
   return initialState
 }
@@ -34,20 +46,54 @@ const Login = () => {
     reducerPassword,
     initialState,
   )
+  const [formIsValid, setFormIsValid] = useState(false)
   const { value: emailValue, isValid: emailIsValid } = emailState
   const { value: passwordValue, isValid: passwordIsValid } = passwordState
+  const emailInputRef = useRef()
+  const passwordInputRef = useRef()
 
   const submitHandler = (event) => {
     event.preventDefault()
-    ctx.onLogin(emailValue, passwordValue)
+
+    if (formIsValid) {
+      ctx.onLogin(emailValue, passwordValue)
+    }
+
+    if (!emailIsValid || emailValue === '') {
+      // activateFocus function is inside of the Input Component via useImperativeHandle Hook
+      emailInputRef.current.activateFocus()
+    }
+    
+    if (!passwordIsValid || passwordValue === '') {
+      passwordInputRef.current.activateFocus()
+    }
   }
+
+  useEffect(() => {
+    // debounce
+    const id = setTimeout(() => {
+      console.log('type')
+      setFormIsValid(
+        emailIsValid &&
+          emailValue !== '' &&
+          passwordIsValid &&
+          passwordValue !== '',
+      )
+    }, 100)
+
+    return () => {
+      console.log('cleanup')
+      clearTimeout(id)
+    }
+  }, [emailIsValid, emailValue, passwordIsValid, passwordValue])
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         <Input
+          ref={emailInputRef}
           isValid={emailIsValid}
-          name="email"
+          id="email"
           type="email"
           label="E-mail"
           value={emailValue}
@@ -57,8 +103,9 @@ const Login = () => {
           onBlur={() => dispatchEmail({ type: 'USER_INPUT_BLUR' })}
         />
         <Input
+          ref={passwordInputRef}
           isValid={passwordIsValid}
-          name="password"
+          id="password"
           type="password"
           label="Password"
           value={passwordValue}
@@ -76,16 +123,7 @@ const Login = () => {
           }
         />
         <div className={classes.actions}>
-          <Button
-            type="submit"
-            className={classes.btn}
-            disabled={
-              !emailIsValid ||
-              emailValue === '' ||
-              !passwordIsValid ||
-              passwordValue === ''
-            }
-          >
+          <Button type="submit" className={classes.btn}>
             Login
           </Button>
         </div>
